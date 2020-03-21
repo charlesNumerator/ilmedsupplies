@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container">
+      <div class="row text-center">
+        <span style="font-weight: bold; font-size:40px; margin-left: 15%;margin-right:15%; margin-top:5%;">Tell us who you are so we can get in touch!</span>
+
+      </div>
+  </div>
+<div class="container">
+
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      {% for message in messages %}
+        <p style="color:red">{{ message }}</p>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <div class="formwrapper">
+    <form method="POST" action="">
+      {{ form.csrf_token }}
+      <div class="form-group">
+        {{ form.org_name.label(class="form-control-label") }} {{ form.org_name(class="form-control form-control-lg", size=20) }}
+      </div>
+
+        <div class="form-group">
+          {{ form.contact_name.label(class="form-control-label") }} {{ form.contact_name(class="form-control form-control-lg", size=20) }}
+        </div>
+        <div class="form-group">
+          {{ form.email.label(class="form-control-label") }} {{ form.email(class="form-control form-control-lg") }}
+        </div>
+        <div class="form-group">
+          {{ form.phone.label(class="form-control-label") }} {{ form.phone(class="form-control form-control-lg") }}
+        </div>
+
+        <div class="form-group">
+          {{ form.zip.label(class="form-control-label") }} {{ form.zip(class="form-control form-control-lg") }}
+        </div>
+
+        <div class="form-group">
+          {{ form.info.label(class="form-control-label") }} {{ form.info(class="form-control form-control-lg") }}
+        </div>
+        <div class="" style="margin-bottom: 5%">
+          {{ form.submit(class="btn btn-primary" ) }}
+          
+
+        </div>
+
+
+    </form>
+  </div>
+</div>
+{% endblock %}

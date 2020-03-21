@@ -1,0 +1,41 @@
+service: il-supplies
+
+plugins:
+  - serverless-python-requirements
+  - serverless-wsgi
+  - serverless-domain-manager
+
+package:
+  - exclude:
+      - node_modules/**
+      - env/**
+
+custom:
+  wsgi:
+    app: app.app
+    packRequirements: false
+  pythonRequirements:
+    dockerizePip: non-linux
+  customDomain:
+    domainName: illinoismedsupplydonations.com
+    certificateName: "illinoismedsupplydonations.com"
+    stage: prod
+    createRoute53Record: true
+    endpointType: 'regional'
+
+
+provider:
+  name: aws
+  runtime: python3.7
+  region: us-east-1
+
+functions:
+  ilSupplies:
+    handler: wsgi.handler
+    environment:
+      SECRET_KEY: ${env:SECRET_KEY}
+      RECAPTCHA_PUBLIC_KEY: ${env:RECAPTCHA_PUBLIC_KEY}
+      RECAPTCHA_PRIVATE_KEY: ${env:RECAPTCHA_PRIVATE_KEY}
+    events:
+      - http: ANY /
+      - http: 'ANY {proxy+}'

@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+{% if parameter == "have" %}
+<div class="container">
+  <div class="row text-center">
+    <span style="font-weight: bold; font-size:40px; margin-left: 15%;margin-right:15%; margin-top:5%;">Have extra medical supplies? You’re in the right place.</span>
+
+  </div>
+  <div class="row" style="margin-top:5%;">
+    <p><strong>Step 1.</strong> Underneath each resource type, please indicate the number of items you have to donate. Once you have indicated all of your extra resources available for donation, please click submit. </p>
+
+  </div>
+  <div class="row">
+    <p><strong>Step 2.</strong>Hang tight because one of our partners will be in touch shortly to discuss safely getting those supplies in the hands of our in-need healthcare professionals.</p>
+  </div>
+  <div class="row" style="margin-bottom:5%;">
+    <p><strong>Step 3.</strong>Hang tight because one of our partners will be in touch shortly to discuss safely getting those supplies in the hands of our in-need healthcare professionals.</p>
+
+  </div>
+
+</div>
+
+{% else %}
+
+<div class="container">
+  <div class="row text-center">
+      <span style="font-weight: bold; font-size:40px; margin-left: 15%;margin-right:15%; margin-top:5%;">Need extra medical supplies? You’re in the right place.</span>
+
+  </div>
+  <div class="row" style="margin-top:5%;">
+    <p><strong>Step 1.</strong> Underneath each resource type, please indicate the number of items your healthcare organization is in need of, then click submit.  </p>
+
+  </div>
+  <div class="row">
+    <p><strong>Step 2.</strong>Hang tight because one of our partners will be in touch shortly to discuss safely getting those supplies into your hands.</p>
+
+  </div>
+  <div class="row" style="margin-bottom:5%;">
+    <p><strong>Step 3.</strong> Thank you for your relentless commitment to the health and safety of our community. </p>
+
+
+  </div>
+</div>
+
+
+
+{% endif %}
+
+
+
+
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    {% for message in messages %}
+    <div class="container">
+      <p style="color:red">{{ message }}</p>
+    </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+
+      <div class="container">
+        <div class="d-flex flex-wrap">
+          {% for item in items %}
+          <div class="p-2">
+            <div class="card border-secondary mb-3" style="max-height: 30rem;">
+              <div class="card-header"><b>{{ item.item_name }}</b></div>
+              <div class="card-body" style="max-width:20rem; height:30rem">
+                <img class="img-fluid mx-auto d-block" src="{{item.item_image}}" style="width:200px;height:200px">
+                <p style="font-size:15px ">{{ item.content }}</p>
+
+
+
+              </div>
+
+              <div class="card-footer">
+
+                <select class="browser-default custom-select" name="{{ item.item_name }}" onchange="selected(this)">
+                  <option selected>Select Quantity</option>
+                  {% set qtys = item.qty.split(',') %}
+                  {% for qty in qtys %}
+                    <option>{{qty}}</option>
+                    {% endfor %}
+
+                </select>
+              </div>
+
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        <form method="post" id="selections" name="selections">
+          <input type="hidden" name="finalresults" value="" id="finalresults">
+          <button type="button" class="btn btn-secondary btn-lg btn-block" onclick="returnSelections()" >Submit</button>
+        </form>
+
+      </div>
+
+
+<script type="text/javascript">
+
+var selections = {};
+
+function selected(selectObject) {
+  let item = selectObject.name;
+  let value = selectObject.value;
+  selections[item] = value
+  console.log(selections)
+
+}
+
+console.log(window.location["href"])
+
+function returnSelections() {
+  var form = document.getElementById("selections")
+  var finalselections = document.getElementById("finalresults")
+  finalselections.value = JSON.stringify([selections])
+  form.submit()
+}
+
+
+
+</script>
+{% endblock %}
