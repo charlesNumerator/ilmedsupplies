@@ -51,40 +51,35 @@
 
 <div class="container">
     <form method="post" id="selections" name="selections" action="">
-        <div class="row" >
-          {% for item in items %}
-          <div class="col-md-4 col-sm-12" style="margin-bottom:10px">
-             <div class="card" style="height: 32rem; max-width:100%; margin-right: 10px">
-              <div class="card-header" style="height:7rem;font-size:20px;font-weight:bold"><b>{{ item.item_name }}</b>
+      <div class="d-flex flex-wrap">
+
+
+
+        {% for item in items %}
+            <div class="card border-secondary mb-3" style="max-height: 30rem;">
+              <div class="card-header"><b>{{ item.item_name }}</b>
               </div>
               <div class="card-body" style="max-width:20rem; height:30rem">
-                   <img class="img-fluid mx-auto d-block" src="{{item.item_image}}" style="width:200px;height:200px">
-                   <p style="font-size:15px ">{{ item.content }}</p>
+                  <img class="img-fluid mx-auto d-block" src="{{item.item_image}}" style="width:200px;height:200px">
+                  <p style="font-size:15px ">{{ item.content }}</p>
               </div>
               <div class="card-footer">
                 <div class="row justify-content-center">
-                     <span style="margin-right:5px"><b>Enter Quantity:</b></span>
-                     <input type="text" name="{{ item.item_name }}" oninput="selected(this)" style="width:40%">
+                    <span style="margin-right:5px"><b>Enter Quantity:</b></span>
+                    <input type="text" name="{{ item.item_name }}" oninput="selected(this)" style="width:40%">
                 </div>
               </div>
             </div>
-          </div>
-          {% endfor %}
-        </div>
-
-        <div class="row justify-content-center" style="margin-bottom:25px">
-          <div class="col-6">
-            <button style="background-color:rbg(5, 36, 96) !important;"
-            type="submit" class="btn btn-secondary btn-lg btn-block" >Submit</button>
-          </div>
-        </div>
-    </form>
-
-
+        {% endfor %}
+      </div>
+    <div class="container" style="margin-left:20%; margin-right:20%">
+        <button style="width:60%;background-color:rbg(5, 36, 96) !important;"
+        type="submit" class="btn btn-secondary btn-lg btn-block" >Submit</button>
+        <br>
     </div>
 
-
-
+    </form>
+  </div>
 
 
 {% endblock %}

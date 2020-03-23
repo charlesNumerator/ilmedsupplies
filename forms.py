@@ -1,8 +1,9 @@
 from flask_wtf import FlaskForm, RecaptchaField
-from wtforms import StringField, TextField, SubmitField
+from wtforms import StringField, TextField, SubmitField, SelectField
 from wtforms.validators import DataRequired, Length, Email, ValidationError
 from wtforms.widgets import TextArea
 import phonenumbers
+from utils import get_sheet
 
 style = {"style":"background:rgb(5, 36, 96) !important; color: white;"}
 
@@ -11,6 +12,7 @@ class ContactForm(FlaskForm):
     email = StringField('Email:  To coordinate pickup of supplies.', [Email(message=('Not a valid email address.')), DataRequired()])
     phone = StringField('Phone: To coordinate pickup of supplies.', [DataRequired()])
     zip = StringField('Zip Code: Helps us figure out who can come pick up the supplies.', [DataRequired()])
+    ship =  SelectField('Willing to mail your supplies?', choices=[("Yes", "Yes"), ("No", "No")])
     submit = SubmitField('Submit', render_kw=style)
     # recaptcha = RecaptchaField()
 

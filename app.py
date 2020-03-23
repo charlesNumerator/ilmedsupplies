@@ -6,6 +6,8 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from forms import ContactForm, OrgContactForm
 
+from utils import process_submissions, flash_errors, get_sheet
+
 scope = ['https://spreadsheets.google.com/feeds',
          'https://www.googleapis.com/auth/drive']
 
@@ -20,16 +22,6 @@ GOOGLE_SHEET_CREDS = ServiceAccountCredentials.from_json_keyfile_name(
     'medical supplies-3abda9c4c6a3.json',scope
     )
 
-def flash_errors(form):
-    for field, errors in form.errors.items():
-        if field != "recaptcha":
-            for error in errors:
-                flash(error)
-
-def get_sheet(sheet_name):
-    client = gspread.authorize(GOOGLE_SHEET_CREDS)
-    sheet = client.open('med supplies')
-    return sheet.worksheet(sheet_name)
 
 
 @app.route('/', methods=('GET', 'POST'))
@@ -48,29 +40,29 @@ def start():
 @app.route('/supplies', methods=('GET', 'POST'))
 def supplies():
     parameter = request.args.get('parameter')
+    cookie = request.cookies.get('ilmedsupplies')
+    if not (parameter or cookie):
+        return redirect(url_for('start', parameter=parameter))
     if request.method == "POST":
-        submissions = json.loads(request.form.get('finalresults'))
-        if len(submissions[0]) < 1:
+        submissions = request.form
+        processed_submissions = process_submissions(submissions)
+        if len(processed_submissions) > 0:
+            now = datetime.utcnow().isoformat()
+            if parameter == "have":
+                submissions_ws = get_sheet("submissions")
+                for k,v in submissions.items():
+                    submissions_ws.append_row([cookie,k,v,now])
+            else:
+                org_needs_ws = get_sheet("org_needs")
+                for k,v in submissions.items():
+                    org_needs_ws.append_row([cookie,k,v,now])
+
+            return redirect(url_for('finish', parameter=parameter))
+        else:
             worksheet = get_sheet("items")
             items = worksheet.get_all_records()
             flash("You must make a selection in order to proceed!")
             return render_template('start.html', items=items, parameter=parameter)
-        else:
-            now = datetime.utcnow().isoformat()
-            cookie = uuid.uuid1().hex
-            if parameter == "have":
-                submissions_ws = get_sheet("submissions")
-                for k,v in submissions[0].items():
-                    submissions_ws.append_row([cookie,k,v,now])
-
-            else:
-                org_needs_ws = get_sheet("org_needs")
-                for k,v in submissions[0].items():
-                    org_needs_ws.append_row([cookie,k,v,now])
-
-            resp = make_response(redirect(url_for('finish', parameter=parameter)))
-            resp.set_cookie('ilmedsupplies', cookie)
-            return resp
     else:
         worksheet = get_sheet("items")
         items = worksheet.get_all_records()
@@ -92,9 +84,10 @@ def finish():
                     email = form.email.data
                     phone = form.phone.data
                     zip = form.zip.data
+                    ship = form.ship.data
                     people_ws = get_sheet("people")
                     now = datetime.utcnow().isoformat()
-                    people_ws.append_row([cookie,name,email,phone, zip, now])
+                    people_ws.append_row([cookie,name,email,phone, zip, ship, now])
                 else:
                     org_name = form.org_name.data
                     contact_name = form.contact_name.data
@@ -120,11 +113,6 @@ def finish():
         else:
             return redirect(url_for('start'))
 
-
-
-
-
-
 @app.route('/org', methods=('GET', 'POST'))
 def need():
     form = OrgContactForm()
@@ -148,6 +136,42 @@ def need():
 
     else:
         return render_template('need.html', form=form)
+
+
+
+
+
+@app.route('/test', methods=('GET', 'POST'))
+def test():
+    parameter = request.args.get('parameter')
+    if not parameter:
+        return redirect(url_for('start', parameter=parameter))
+    if request.method == "POST":
+        submissions = request.form
+        processed_submissions = process_submissions(submissions)
+        if len(processed_submissions) > 0:
+            now = datetime.utcnow().isoformat()
+            cookie = uuid.uuid1().hex
+            if parameter == "have":
+                submissions_ws = get_sheet("submissions")
+                for k,v in submissions.items():
+                    submissions_ws.append_row([cookie,k,v,now])
+            else:
+                org_needs_ws = get_sheet("org_needs")
+                for k,v in submissions.items():
+                    org_needs_ws.append_row([cookie,k,v,now])
+            resp = make_response(render_template('success.html'))
+            resp.set_cookie('ilmedsupplies', '', expires=0)
+            return resp
+        else:
+            worksheet = get_sheet("items")
+            items = worksheet.get_all_records()
+            flash("You must make a selection in order to proceed!")
+            return render_template('start.html', items=items, parameter=parameter)
+    else:
+        worksheet = get_sheet("items")
+        items = worksheet.get_all_records()
+        return render_template('start.html', items=items, parameter=parameter)
 
 
 if __name__ == '__main__':
