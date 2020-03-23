@@ -1,8 +1,6 @@
 env
 .DS_Store
 __pycache__
-node-modules/
-.serverless
 node-modules
-node-modules/*
+.serverless
 medical supplies-3abda9c4c6a3.json
