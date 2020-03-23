@@ -79,25 +79,27 @@
               </div>
 
               <div class="card-footer">
+                <div class="row justify-content-center">
+                    <span style="margin-right:5px"><b>Enter Quantity:</b></span>
 
-                <select class="browser-default custom-select" name="{{ item.item_name }}" onchange="selected(this)">
-                  <option selected>Select Quantity</option>
-                  {% set qtys = item.qty.split(',') %}
-                  {% for qty in qtys %}
-                    <option>{{qty}}</option>
-                    {% endfor %}
+                    <input type="text" name="{{ item.item_name }}" oninput="selected(this)" style="width:40%">
+                </div>
 
-                </select>
               </div>
 
             </div>
           </div>
           {% endfor %}
         </div>
-        <form method="post" id="selections" name="selections">
-          <input type="hidden" name="finalresults" value="" id="finalresults">
-          <button type="button" class="btn btn-secondary btn-lg btn-block" onclick="returnSelections()" >Submit</button>
-        </form>
+        <div class="container" style="margin-left:20%; margin-right:20%">
+          <form method="post" id="selections" name="selections">
+            <input type="hidden" name="finalresults" value="" id="finalresults">
+            <button style="width:60%;background-color:rbg(5, 36, 96) !important;" type="button" class="btn btn-secondary btn-lg btn-block" onclick="returnSelections()" >Submit</button>
+            <br>
+          </form>
+
+
+        </div>
 
       </div>
 
