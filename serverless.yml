@@ -17,12 +17,11 @@ custom:
   pythonRequirements:
     dockerizePip: non-linux
   customDomain:
-    domainName: illinoismedsupplydonations.com
+    domainName: www.illinoismedsupplydonations.com
     certificateName: "illinoismedsupplydonations.com"
     stage: prod
     createRoute53Record: true
     endpointType: 'regional'
-
 
 provider:
   name: aws
